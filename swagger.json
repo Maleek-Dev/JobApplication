@@ -1,0 +1,207 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Job Portal API",
+    "version": "1.0.0",
+    "description": "API documentation for the Job Portal platform."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register user",
+        "description": "Register a new user (Seeker or Employer).",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "role"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": { "type": "string", "enum": ["seeker", "employer"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created, token returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "token": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Logged in, token returned." }
+        }
+      }
+    },
+    "/api/companies": {
+      "post": {
+        "tags": ["Companies"],
+        "summary": "Create a company",
+        "description": "Employers and Admins can create a company.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "description", "location"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "website": { "type": "string" },
+                  "location": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Company created successfully." }
+        }
+      }
+    },
+    "/api/jobs": {
+      "post": {
+        "tags": ["Jobs"],
+        "summary": "Post a job",
+        "description": "Employers and Recruiters can post a job.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "description", "requirements", "salaryRange", "location", "company"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "requirements": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "salaryRange": { "type": "string" },
+                  "location": { "type": "string" },
+                  "company": { "type": "string", "description": "Company ID" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Job posted successfully." }
+        }
+      }
+    },
+    "/api/resumes": {
+      "post": {
+        "tags": ["Resumes"],
+        "summary": "Upload a resume",
+        "description": "Seekers can upload a resume file.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Resume uploaded successfully." }
+        }
+      }
+    },
+    "/api/applications": {
+      "post": {
+        "tags": ["Applications"],
+        "summary": "Apply for a job",
+        "description": "Seekers can apply for a job.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["job", "resume"],
+                "properties": {
+                  "job": { "type": "string", "description": "Job ID" },
+                  "resume": { "type": "string", "description": "Resume ID" },
+                  "coverLetter": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Application submitted successfully." }
+        }
+      }
+    }
+  }
+}
